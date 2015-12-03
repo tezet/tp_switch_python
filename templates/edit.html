@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+
+{% block head %}
+<script src="{{ static_url("js/switches_learn.js") }}"></script>
+
+<script>
+$(document).ready(function ()
+{
+	modal_wait_enable  = new $.UIkit.modal.Modal("#modal_wait_enable");
+	modal_wait_disable = new $.UIkit.modal.Modal("#modal_wait_disable");
+	modal_input_name   = new $.UIkit.modal.Modal("#modal_input_name");
+
+	{% if len(switches) < 1  %}
+
+	modal_wait_enable.show();
+	wait_for_enable();
+ 	{% end %}
+});
+</script>
+{% end %}
+
+{% block body %}
+<h1>{{ title }}</h1>
+
+{% if alert['type'] <> None  %}
+<div class="uk-alert uk-alert-{{ alert['type'] }}">
+<a href="/edit" class="uk-alert-close uk-close"></a>
+{{ alert['text'] }}
+</div>
+{% end %}
+
+{% if len(switches) < 1  %}
+<div class="uk-alert uk-alert">
+<h2>{{ _("No switches defined") }}</h2>
+<h4>{{ _("Create one by clicking 'Add new'") }}</h4>
+</div>
+{% end %}
+
+<form class="uk-form" action="/edithandler" method="post">
+	<input type="hidden" name="op" value="edit">
+
+	{% for id, switch in enumerate(switches) %}
+	<fieldset>
+		<div class="uk-panel uk-panel-box">
+		<input type="hidden" name="id" value="{{ id }}">
+		<input name="name" type="text" value="{{ switch['name'] }}" placeholder="{{ _("Name") }}" required>
+		<input class="uk-form-width-medium uk-form-success" name="on" type="text" value="{{ switch['on'] }}" placeholder="{{ _("Enable command") }}" required>
+		<input class="uk-form-width-medium uk-form-danger" name="off" type="text" value="{{ switch['off'] }}" placeholder="{{ _("Disable command") }}" required>
+		<input class="uk-form-width-mini" name="state" type="text" value="{{ switch['state'] }}" placeholder="{{ _("State") }}" required>
+		<input type="hidden" name="on_ret" type="text" value="{{ switch['on_ret'] }}">
+		<input type="hidden" name="off_ret" type="text" value="{{ switch['off_ret'] }}">
+		<input type="hidden" name="counter" value="{{ switch['counter']  }}">
+
+		<a href="/edithandler?op=up&&id={{ id }}" class="uk-icon-button uk-icon-level-up"></a>
+		<a href="/edithandler?op=down&&id={{ id }}" class="uk-icon-button uk-icon-level-down"></a>
+		<a href="/edithandler?op=remove&&id={{ id }}" class="uk-icon-button uk-icon-remove uk-text-danger"></a>
+		</div>
+	</fieldset>
+	{% end %}
+
+	<button class="uk-button uk-icon-save type="submit"> {{ _("Submit") }}</button>
+	<a href="#" id="add_switch"class="uk-button"><i class="uk-icon-magic"></i> {{ _("Add new") }}</a>
+</form>
+
+
+<!-- Modal wait enable -->
+<div id="modal_wait_enable" class="uk-modal">
+	<div class="uk-modal-dialog">
+		<a class="uk-modal-close uk-close"></a>
+		<i class="uk-icon-spinner uk-icon-spin uk-icon-large"></i>  {{ _("Press ENABLE on remote controller") }}
+	</div>
+</div>
+
+<!-- Modal wait disable -->
+<div id="modal_wait_disable" class="uk-modal">
+	<div class="uk-modal-dialog">
+		<a class="uk-modal-close uk-close"></a>
+		<i class="uk-icon-check uk-icon-large uk-text-success"></i> {{ _("Press ENABLE on remote controller") }}
+		</p><i class="uk-icon-spinner uk-icon-spin uk-icon-large"></i> {{ _("Press DISABLE on remote controller") }}
+	</div>
+</div>
+
+<!-- Modal name input -->
+<div id="modal_input_name" class="uk-modal">
+	<div class="uk-modal-dialog">
+		<a class="uk-modal-close uk-close"></a>
+		<i class="uk-icon-check uk-icon-large uk-text-success"></i> {{ _("Press ENABLE on remote controller") }}
+		</p><i class="uk-icon-check uk-icon-large uk-text-success"></i> {{ _("Press DISABLE on remote controller") }}
+		</p>
+		<form class="uk-form" action="/edithandler" method="post">
+			<fieldset>
+				<input type="hidden" name="op" value="add_finish">
+				<input id="on_input"  name="on" type="hidden" value="">
+				<input id="off_input"  name="off" type="hidden" value="">
+
+				<div id="advanced_settings">
+				</p>{{ _("Settings useful for remotes with one button for each switch:") }}
+				</p>{{ _("Number of retransmits for ON command") }} <input class="uk-form-width-mini" name="on_ret" type="text" value="2" required>
+				</p>{{ _("Number of retransmits for OFF command") }} <input class="uk-form-width-mini" name="off_ret" type="text" value="2" required>
+				</div>
+				<input type="hidden" name="counter" value="0">
+				</p><i class="uk-icon-keyboard uk-icon-large"></i> <input name="name" type="text" value="" placeholder="{{ _("Enter name") }}" required>
+			</fieldset>
+		<button class="uk-button" type="submit">{{ _("Add") }}</button> <a href="#" id="advanced_btn"class="uk-button"><i class="uk-icon-wrench"></i> {{ _("Advanced") }}</a>
+		</form>
+	</div>
+</div>
+
+{% end %}

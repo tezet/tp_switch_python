@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+
+{% if alert['type'] <> None  %}
+<div class="uk-alert uk-alert-{{ alert['type'] }}">
+{{ alert['text'] }}
+</div>
+{% end %}
+
+<div class="uk-panel uk-panel-box">
+
+<form action="/changepass" method="post">
+<h2>{{ title }}</h2>
+<fieldset>
+<input type="password" name="password_old" required placeholder="{{ _("Old password") }}">
+</br>
+<input type="password" name="password" required placeholder="{{ _("New password") }}">
+</br>
+<input type="password" name="password_ver" required placeholder="{{ _("Verify password") }}">
+</fieldset>
+<button class="uk-button uk-icon-save type="submit"> {{ _("Submit") }}</button>
+</form>
+
+</div>
+
+{% end %}

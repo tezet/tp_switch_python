@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ static_url("css/jquery-cron.css") }}" />
+<script src="{{ static_url("js/jquery-cron-min-"+locale.code+".js") }}"/></script>
+
+<script>
+
+    $(document).ready(function() {
+
+  		$('#cron_new').cron({
+			    initial: "* * * * *",
+			    customValues: {
+			        "{{ _("5 minutes") }}" : "*/5 * * * *",
+			        "{{ _("10 minutes") }}" : "*/10 * * * *",
+			        "{{ _("15 minutes") }}" : "*/15 * * * *",
+			        "{{ _("30 minutes") }}" : "*/30 * * * *",
+			    },
+			    onChange: function() {
+			        $('#cron_value_new').attr('value', $(this).cron("value"));
+			    }});
+
+		{% for id, timer in enumerate(timers) %}
+			$('#cron{{ id }}').cron({
+			    initial: "{{ timer['cron'] }}",
+			    customValues: {
+			        "{{ _("5 minutes") }}" : "*/5 * * * *",
+			        "{{ _("10 minutes") }}" : "*/10 * * * *",
+			        "{{ _("15 minutes") }}" : "*/15 * * * *",
+			        "{{ _("30 minutes") }}" : "*/30 * * * *",
+			    },
+			    onChange: function() {
+			        $('#cron_value{{ id }}').attr('value', $(this).cron("value"));
+			    }
+			});
+	     {% end %}
+
+	 $('#add_timer').click(function(){
+
+    	var modal_new_timer  = new $.UIkit.modal.Modal("#modal_new_timer");
+		modal_new_timer.show();
+  	});
+
+    });
+
+
+</script>
+{% end %}
+
+{% block body %}
+<h1>{{ title }}</h1>
+
+{% if alert['type'] <> None  %}
+<div class="uk-alert uk-alert-{{ alert['type'] }}">
+<a href="/timers" class="uk-alert-close uk-close"></a>
+{{ alert['text'] }}
+</div>
+{% end %}
+
+{% if len(timers) < 1  %}
+<div class="uk-alert uk-alert">
+<h2>{{ _("No timers defined") }}</h2>
+<h4>{{ _("Create one by clicking 'Add new'") }}</h4>
+</div>
+{% end %}
+
+<form class="uk-form" action="/timersedit" method="post">
+<input type="hidden" name="op" value="edit">
+<table>
+{% for id, timer in enumerate(timers) %}
+	<tr>
+	<td>
+	<fieldset>
+	<div class="uk-panel uk-panel-box">
+	<i id="cron{{ id }}"></i>
+	<input id="cron_value{{ id }}" name="cron" type="hidden" value="{{ timer['cron'] }}">
+	<select name="state">
+		<option value="1" {{ is_selected(timer['state'], 1) }}>{{ _("turn ON") }}</option>
+		<option value="0" {{ is_selected(timer['state'], 0) }}>{{ _("turn OFF") }}</option>
+		<option value="2" {{ is_selected(timer['state'], 2) }}>{{ _("TOGGLE") }}</option>
+	</select>
+	<select name="switch">
+	{% for id_switch, switch in enumerate(switches) %}
+	  <option value="{{ switch['name'] }}" {{ is_selected(switch['name'], timer['switch_name']) }}>{{ switch['name'] }}</option>
+	{% end %}
+	</select>
+
+	</td>
+	<td>
+	<a href="/timersedit?op=remove&&id={{ id }}" class="uk-icon-button uk-icon-remove uk-text-danger"></a>
+	</fieldset>
+	</td>
+	</tr>
+	</div>
+{% end %}
+</table>
+	</br>
+	<button class="uk-button uk-icon-save type="submit"> {{ _("Submit") }}</button>
+	<a href="#" id="add_timer" class="uk-button"><i class="uk-icon-time"></i> {{ _("Add new") }}</a>
+</form>
+
+<!-- Modal wait enable -->
+<div id="modal_new_timer" class="uk-modal">
+	<div class="uk-modal-dialog">
+		<a class="uk-modal-close uk-close"></a>
+		<h2>{{ _("Add new entry") }}</h2>
+
+
+<form class="uk-form" action="/timersedit" method="post">
+<input type="hidden" name="op" value="add">
+	<fieldset>
+	<i id="cron_new"></i>
+	<input id="cron_value_new" name="cron" type="hidden" value="* * * * *">
+	<select name="state" required>
+		<option value="1">{{ _("turn ON") }}</option>
+		<option value="0">{{ _("turn OFF") }}</option>
+		<option value="2">{{ _("TOGGLE") }}</option>
+	</select>
+	<select name="switch" required>
+	{% for id_switch, switch in enumerate(switches) %}
+	  <option value="{{ switch['name'] }}">{{ switch['name'] }}</option>
+	{% end %}
+	</select>
+	</fieldset>
+	</br>
+	<button class="uk-button uk-icon-save type="submit"> {{ _("Submit") }}</button>
+</form>
+
+
+	</div>
+</div>
+
+{% end %}
+
+

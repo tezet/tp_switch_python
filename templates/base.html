@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ static_url("css/uikit.gradient.min.css") }}" />
+	<script src="{{ static_url("js/jquery.min.js") }}"></script>
+	<script src="{{ static_url("js/uikit.min.js") }}"></script>
+    <title>{% block title %}{{ title }}{% end %}</title>
+    {% block head %}{% end %}
+  </head>
+  <body>
+    <div id="body">
+      <div id="header">
+	    {% block header %}
+			<nav class="uk-navbar uk-navbar-attached">
+				<div class="uk-container uk-container-center">
+					{% if current_user %}
+					<a href="#tp-offcanvas" class="uk-navbar-toggle uk-visible-small" data-uk-offcanvas></a>
+					<a class="uk-navbar-brand" href="/"><i class="uk-icon-small uk-icon-off"></i> TPSwitch</a>
+						<ul class="uk-navbar-nav uk-hidden-small">
+						<li class="{% if title ==  _("Switches") %}uk-active{% end %}"><a href="/">{{ _("Switches") }}</a></li>
+						<li class="{% if title ==  _("Timers") %}uk-active{% end %}"><a href="/timers">{{ _("Timers") }}</a></li>
+						<li class="uk-parent {% if title in  [_("Edit switches"), _("Change password"), _("API access")] %}uk-active{% end %}" data-uk-dropdown>
+							<a href="">{{ _("Settings") }}</a>
+							<div class="uk-dropdown uk-dropdown-navbar">
+								<ul class="uk-nav uk-nav-navbar">
+									<li><a href="/edit">{{ _("Edit switches") }}</a></li>
+									<li><a href="/changepass">{{ _("Change password") }}</a></li>
+									<li><a href="/api/edit">{{ _("API access") }}</a></li>
+								</ul>
+							</div>
+						</li>
+						<li class="{% if title ==  _("Logout") %}uk-active{% end %}"><a href="/logout">{{ _("Logout") }}</a></li>
+						</ul>
+						{% end %}
+				</div>
+			</nav>
+		</div>
+	    {% end %}
+
+		<div class="uk-container uk-container-center">
+			<div class="uk-grid" data-uk-grid-margin>
+   				</br>
+				<div class="uk-width-1-1">
+			      <div id="content">
+			      <article class="uk-article">
+			      {% block body %}
+
+			      {% end %}</div>
+			      </article>
+				</div>
+			</div>
+		</div>
+
+		<div class="tm-footer">
+			<div class="uk-container uk-container-center uk-text-center">
+				<div class="uk-panel">
+				</div>
+			</div>
+		</div>
+    </div>
+
+    <div id="tp-offcanvas" class="uk-offcanvas">
+			<div class="uk-offcanvas-bar">
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="{ multiple: true }">
+					<li class="{% if title ==  _("Switches") %}uk-active{% end %}"><a href="/"><i class="uk-icon-off"></i> {{ _("Switches") }}</a></li>
+					<li class="{% if title ==  _("Timers") %}uk-active{% end %}"><a href="/timers"><i class="uk-icon-time"></i> {{ _("Timers") }}</a></li>
+					<li class="uk-parent {% if title in  [_("Edit switches"), _("Change password"), _("API access")] %}uk-active{% end %}"><a href="#"><i class="uk-icon-wrench"></i> {{ _("Settings") }}</a>
+						<ul class="uk-nav-sub">
+							<li><a href="/edit">{{ _("Edit switches") }}</a></li>
+							<li><a href="/changepass">{{ _("Change password") }}</a></li>
+							<li><a href="/api/edit">{{ _("API access") }}</a></li>
+						</ul>
+					</li>
+					<li class="{% if title ==  _("Logout") %}uk-active{% end %}"><a href="/logout"><i class="uk-icon-signout"></i> {{ _("Logout") }}</a></li>
+				</ul>
+			</div>
+		</div>
+    {% block bottom %}{% end %}
+  </body>
+</html>

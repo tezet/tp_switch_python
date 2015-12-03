@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+
+{% if alert['type'] <> None  %}
+<div class="uk-alert uk-alert-{{ alert['type'] }}">
+{{ alert['text'] }}
+</div>
+{% end %}
+<h1 class="uk-article-title">{{ title }}</h1>
+<article class="uk-article">
+<h2>{{ _("Instructions") }}</h2>
+<p>{{ _("API access enable control of the switches from external applications.") }}</p>
+
+<h3>{{ _("Avaliable methods") }}</h3>
+
+<table class="uk-table uk-table-hover uk-table-condensed">
+<thead>
+	<tr>
+		<th class="uk-width-1-4">{{ _("Method") }}</th>
+		<th class="uk-width-3-4">{{ _("Description") }}</th>
+	</tr>
+</thead>
+<tbody>
+	<tr>
+		<td><code>api/set?switch=x&state=y&key=z</code></td>
+		<td>{{ _("Control switches state") }}</td>
+	</tr>
+	<tr>
+		<td><code>api/get?switch=x&&key=z</code></td>
+		<td>{{ _("Read switches state") }}</td>
+	</tr>
+</tbody>
+</table>
+
+<h3 class="tm-article-subtitle">{{ _("Arguments description") }}</h3>
+
+<table class="uk-table uk-table-hover uk-table-condensed">
+<thead>
+	<tr>
+		<th class="uk-width-1-4">{{ _("Element") }}</th>
+		<th class="uk-width-3-4">{{ _("Description") }}</th>
+	</tr>
+</thead>
+<tbody>
+	<tr>
+		<td><code>switch</code></td>
+		<td>{{ _("Switch id (enumerating from 0)") }}</td>
+	</tr>
+	<tr>
+		<td><code>state</code></td>
+		<td>{{ _("Desired state; 0: disable, 1: enable, 2: toggle") }}</td>
+	</tr>
+	<tr>
+		<td><code>key</code></td>
+		<td>{{ _("API access key") }}</td>
+	</tr>
+</tbody>
+</table>
+
+</article>
+
+<h2>{{ _("API authentication key") }}</h2>
+<form action="/api/edit" method="post">
+
+	<fieldset>
+	<input type="text" name="key" value="{{ key }}" required placeholder={{ _("Enter new API key") }}"">
+	</fieldset>
+</fieldset>
+<button class="uk-button uk-icon-save type="submit"> {{ _("Submit") }}</button>
+</form>
+
+
+{% end %}

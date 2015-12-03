@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+
+{% if alert['type'] <> None  %}
+<div class="uk-alert uk-alert-{{ alert['type'] }}">
+{{ alert['text'] }}
+</div>
+{% end %}
+
+<div class="uk-panel uk-panel-box">
+
+<form action="/login" method="post">
+{% if not creation  %}
+	<h2>{{ _("Enter password") }}</h2>
+	<fieldset>
+	<input type="password" name="password" required placeholder="{{ _("Enter password") }}">
+	</fieldset>
+{% else  %}
+	<h2>{{ _("Create new password") }}</h2>
+	<fieldset>
+	<input type="password" name="password" required placeholder="{{ _("Enter password") }}">
+	</br>
+	<input type="password" name="password_ver" required placeholder="{{ _("Verify password") }}">
+{% end  %}
+</fieldset>
+<button class="uk-button uk-icon-save type="submit"> {{ _("Submit") }}</button>
+</form>
+
+</div>
+
+{% end %}

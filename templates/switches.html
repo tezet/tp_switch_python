@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script src="{{ static_url("js/jquery.min.js") }}"/></script>
+<script src="{{ static_url("js/switches.js") }}"/></script>
+<script>
+function init_switches_state()
+{
+	{% for id, switch in enumerate(switches) %}
+		$('#switch{{ id }}').toggles({on:{{ switch['state'] }} });
+	{% end %}
+}
+</script>
+{% end %}
+
+{% block body %}
+
+{% if len(switches) < 1  %}
+
+<div class="uk-alert uk-alert">
+<h2>{{ _("No switches defined") }}</h2>
+<h4>{{ _("Create one in 'Settings' menu.") }}</h4>
+</div>
+{% end %}
+
+	<div class="uk-grid" data-uk-grid-match>
+		{% for id, switch in enumerate(switches) %}
+			{% module Toggles(switch, id) %}
+		{% end %}
+	</div>
+{% end %}
