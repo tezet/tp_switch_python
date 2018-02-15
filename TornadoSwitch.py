@@ -78,8 +78,10 @@ class Application(tornado.web.Application):
             "debug": True,
             "state": STATE_NORMAL
             }
-
+        
         tornado.web.Application.__init__(self, handlers = handlers, **settings)
+
+        #self.rc.set_initial_states()
 
     def send_msg_to_mcu(self, msg):
         print('Sending msg to mcu: ' + msg)
@@ -97,11 +99,16 @@ class Application(tornado.web.Application):
 
     def process_mcu_msg(self, msg):
         print('Received msg from mcu: ' + msg)
+
         if self.settings["state"] == STATE_NORMAL:
             self.rc.process_received_cmd(msg)
         elif self.settings["state"] == STATE_LEARN:
             if msg.find("[R]") <> -1:
                 self.aq.refresh_state(self.aq.REASON_LEARN, msg)
+
+        if msg.find("RCswitch initialized") <> -1:
+            print "RCswitch initialized"
+            self.rc.set_initial_states()
 
     def process_sched_msg(self, msg):
         switch = self.rc.get_switch_id_by_name(msg['switch_name'])
@@ -154,7 +161,7 @@ class LoginHandler(BaseHandler):
             password     = self.get_argument("password")
             password_ver = self.get_argument("password_ver")
             error = False
-
+            
             if password <> password_ver:
                 text = self.locale.translate("Passwords were not the same.")
                 error = True
@@ -522,6 +529,8 @@ def main():
 
     scheduler.start()
     mainLoop.start()
+
+    
 
 
 if __name__ == "__main__":

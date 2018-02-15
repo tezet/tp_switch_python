@@ -2,6 +2,7 @@
 
 import shelve
 import os.path
+import time
 
 class RCSwitch:
 	def __init__(self, mcu_callback, aq):
@@ -83,15 +84,14 @@ class RCSwitch:
 				off_ret = switch['off_ret']
 				on_ret = switch['on_ret']
 
-				if switch['state'] <> newstate:
-					if newstate:
-						switch['state'] = 1
-						self.mcu_callback('[T' + str(on_ret) +']' + switch['on'])
-					else:
-						switch['state'] = 0
-						self.mcu_callback('[T' + str(off_ret) +']' + switch['off'])
-					self.db_flush()
-					self.aq.refresh_state(self.aq.REASON_RC)
+				if newstate:
+					switch['state'] = 1
+					self.mcu_callback('[T' + str(on_ret) +']' + switch['on'])
+				else:
+					switch['state'] = 0
+					self.mcu_callback('[T' + str(off_ret) +']' + switch['off'])
+				self.db_flush()
+				self.aq.refresh_state(self.aq.REASON_RC)
 			else:
 				if state == 1:
 					switch['state'] = 1
@@ -161,6 +161,13 @@ class RCSwitch:
 			return switch['on'] == switch['off']
 		return False
 
+	def set_initial_states(self):
+		self.mcu_callback('ping')
+
+		for id in range(len(self.db['switches'])):
+			switch = self.get_switch_by_id(id)
+			time.sleep(2)
+			self.set_switch(id, switch['state'])
 
 
 
