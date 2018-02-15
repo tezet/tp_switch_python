@@ -7,6 +7,7 @@ from scheduller import Scheduller
 
 import multiprocessing
 import serialProcess
+import json
 from rcswitch import *
 from backend import *
 
@@ -66,6 +67,7 @@ class Application(tornado.web.Application):
             (r"/timersedit", TimersEdit, arguments),
             (r"/getstate", SwitchesState, arguments),
             (r"/api/set", ApiSetHandler, arguments),
+            (r"/api/json", ApiJsonHandler, arguments),    
             (r"/api/get", ApiGetHandler, arguments),
             (r"/api/edit", ApiViewHandler, arguments),
             ]
@@ -427,6 +429,44 @@ class ApiSetHandler(BaseHandler):
             self.write('OK')
         else:
             self.write('ERROR:KEY')
+
+
+class ApiJsonHandler(BaseHandler):
+    def get(self):
+        switch = self.get_argument("switch")
+        switch = int(switch.replace("switch", "").strip())
+        key = self.get_argument("key")
+
+        if self.backend.verify_key(key):
+            current_state = self.rc.get_state_by_id(switch)
+            if current_state == 1:
+                resp = "{\"is_active\": \"true\"}"
+            else:
+                resp = "{\"is_active\": \"false\"}"
+            self.content_type = 'application/json'
+            self.write(resp)
+        else:
+            self.write('ERROR:KEY')
+
+    def post(self):
+        try:
+            data = json.loads(self.request.body)
+            switch = int(data['switch'])
+            state = int(data['state'])
+            key = data['key']
+            if self.backend.verify_key(key):
+                current_state = self.rc.get_state_by_id(switch)
+                if state == 2: #toggle
+                    state = not current_state
+                    self.rc.set_switch(switch, state)
+                else:
+                    if state <> current_state:
+                        self.rc.set_switch(switch, state)
+                self.write('OK')
+            else:
+                self.write('ERROR:KEY')
+        except:
+            self.write('ERROR:INPUT')             
 
 class ApiGetHandler(BaseHandler):
     def get(self):
